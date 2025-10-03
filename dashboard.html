@@ -1,148 +1,108 @@
-<script>
-    // Initialize Supabase
-    const supabaseUrl = 'https://aiqnodafwmzhwsfunvco.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpcW5vZGFmd216aHdzZnVudmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1MjE4MTcsImV4cCI6MjA3NTA5NzgxN30.OEZloiLjXFdVdgZY6cxqfDlihxRVj36K1N9yjJZzLv8';
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-    
-    let userId = null;
-    let userData = null;
-    
-    // Check authentication
-    supabase.auth.getSession().then(({ data: { session } }) => {
-        console.log('Session check:', session);
-        if (!session) {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Earnzy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f3f4f6; }
+        .app-container { max-width: 428px; margin: 0 auto; background: white; min-height: 100vh; }
+        .card { background: white; border-radius: 12px; padding: 16px; margin: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .btn { background: #6366f1; color: white; padding: 12px; border-radius: 8px; text-align: center; display: block; text-decoration: none; margin: 8px 0; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header style="background: white; padding: 16px; border-bottom: 1px solid #e5e7eb;">
+            <h1 style="font-size: 24px; font-weight: bold;">Earnzy</h1>
+            <p id="userEmail">Loading...</p>
+        </header>
+
+        <main>
+            <!-- Welcome Card -->
+            <div class="card">
+                <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 8px;">Welcome! 👋</h2>
+                <p>Ready to earn coins?</p>
+                <p>Referral Code: <strong id="referralCode">LOADING</strong></p>
+            </div>
+
+            <!-- Stats -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px;">
+                <div class="card">
+                    <div style="font-size: 24px; font-weight: bold; color: #6366f1;" id="totalCoins">100</div>
+                    <div style="color: #6b7280;">Total Coins</div>
+                </div>
+                <div class="card">
+                    <div style="font-size: 24px; font-weight: bold; color: #10b981;" id="dailyStreak">0</div>
+                    <div style="color: #6b7280;">Day Streak</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 12px;">Quick Actions</h3>
+                <a href="watch.html" class="btn">🎥 Watch Ads (+15 coins)</a>
+                <a href="scratch.html" class="btn">✨ Scratch Cards</a>
+                <a href="checkin.html" class="btn">📅 Daily Check-in</a>
+                <a href="treasure.html" class="btn">🎁 Treasure Box</a>
+            </div>
+
+            <!-- More Ways -->
+            <div class="card">
+                <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 12px;">More Ways to Earn</h3>
+                <a href="referral.html" class="btn">👥 Refer Friends (+250 coins)</a>
+                <a href="withdraw.html" class="btn">💸 Withdraw Earnings</a>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav style="position: fixed; bottom: 0; width: 100%; max-width: 428px; background: white; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-around; padding: 8px 0;">
+            <a href="dashboard.html" style="text-align: center; text-decoration: none; color: #6366f1;">
+                <div>🏠</div>
+                <div style="font-size: 12px;">Home</div>
+            </a>
+            <a href="watch.html" style="text-align: center; text-decoration: none; color: #6b7280;">
+                <div>🎥</div>
+                <div style="font-size: 12px;">Earn</div>
+            </a>
+            <a href="referral.html" style="text-align: center; text-decoration: none; color: #6b7280;">
+                <div>👥</div>
+                <div style="font-size: 12px;">Refer</div>
+            </a>
+            <a href="profile.html" style="text-align: center; text-decoration: none; color: #6b7280;">
+                <div>👤</div>
+                <div style="font-size: 12px;">Profile</div>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        // Simple dashboard with local storage
+        console.log('Dashboard loaded');
+        
+        // Check if user is logged in
+        const user = JSON.parse(localStorage.getItem('earnzy_user') || '{}');
+        
+        if (!user.email) {
+            // Redirect to login if no user data
             window.location.href = 'login.html';
         } else {
-            userId = session.user.id;
-            console.log('User ID:', userId);
-            loadUserData();
+            // Update UI with user data
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('referralCode').textContent = user.referral_code || 'EARNZY123';
+            document.getElementById('totalCoins').textContent = user.total_coins || 100;
+            document.getElementById('dailyStreak').textContent = user.daily_streak || 0;
         }
-    }).catch(error => {
-        console.error('Auth error:', error);
-        // Fallback - check localStorage
-        const storedUser = localStorage.getItem('earnzy_user');
-        if (storedUser) {
-            userData = JSON.parse(storedUser);
-            updateUIWithFallbackData();
-        }
-    });
-    
-    // Load user data with error handling
-    async function loadUserData() {
-        try {
-            console.log('Loading user data for:', userId);
-            const { data, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('id', userId)
-                .single();
-            
-            if (error) {
-                console.error('Database error:', error);
-                // Use fallback data
-                useFallbackData();
-                return;
+
+        // Simple logout
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'logoutBtn') {
+                localStorage.removeItem('earnzy_user');
+                window.location.href = 'login.html';
             }
-            
-            console.log('User data loaded:', data);
-            userData = data;
-            
-            // Update UI
-            document.getElementById('userEmail').textContent = data.email;
-            document.getElementById('referralCode').textContent = data.referral_code || 'EARNZY123';
-            document.getElementById('totalCoins').textContent = data.total_coins || 100;
-            document.getElementById('dailyStreak').textContent = data.daily_streak || 0;
-            
-            // Store in localStorage as backup
-            localStorage.setItem('earnzy_user', JSON.stringify(data));
-            
-        } catch (error) {
-            console.error('Error loading user data:', error);
-            useFallbackData();
-        }
-    }
-    
-    // Fallback data when database fails
-    function useFallbackData() {
-        const fallbackData = {
-            email: 'user@earnzy.com',
-            referral_code: 'EARNZY123',
-            total_coins: 100,
-            daily_streak: 0
-        };
-        
-        document.getElementById('userEmail').textContent = fallbackData.email;
-        document.getElementById('referralCode').textContent = fallbackData.referral_code;
-        document.getElementById('totalCoins').textContent = fallbackData.total_coins;
-        document.getElementById('dailyStreak').textContent = fallbackData.daily_streak;
-    }
-    
-    // Update UI with fallback data
-    function updateUIWithFallbackData() {
-        if (userData) {
-            document.getElementById('userEmail').textContent = userData.email;
-            document.getElementById('referralCode').textContent = userData.referral_code;
-            document.getElementById('totalCoins').textContent = userData.total_coins;
-            document.getElementById('dailyStreak').textContent = userData.daily_streak;
-        }
-    }
-    
-    // Simple coin add function (local storage based)
-    function addCoinsLocal(coins, type) {
-        let user = JSON.parse(localStorage.getItem('earnzy_user') || '{}');
-        user.total_coins = (user.total_coins || 100) + coins;
-        localStorage.setItem('earnzy_user', JSON.stringify(user));
-        
-        // Update UI
-        document.getElementById('totalCoins').textContent = user.total_coins;
-        
-        // Show success message
-        showMessage(`+${coins} coins added!`, 'success');
-        
-        // Try to update database in background
-        updateDatabaseInBackground(coins, type);
-    }
-    
-    // Update database in background
-    async function updateDatabaseInBackground(coins, type) {
-        try {
-            if (userId) {
-                const { data: userData } = await supabase
-                    .from('users')
-                    .select('total_coins')
-                    .eq('id', userId)
-                    .single();
-                
-                if (userData) {
-                    await supabase
-                        .from('users')
-                        .update({ total_coins: userData.total_coins + coins })
-                        .eq('id', userId);
-                }
-            }
-        } catch (error) {
-            console.log('Background update failed, using local storage');
-        }
-    }
-    
-    // Show message
-    function showMessage(message, type) {
-        // Simple message display
-        alert(message);
-    }
-    
-    // Logout
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-        await supabase.auth.signOut();
-        localStorage.removeItem('earnzy_user');
-        window.location.href = 'login.html';
-    });
-    
-    // Bottom nav active state
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', function() {
-            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
         });
-    });
-</script>
+    </script>
+</body>
+</html>
