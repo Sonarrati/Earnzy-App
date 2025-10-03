@@ -10,112 +10,155 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Profile Header -->
-        <div class="profile-header">
-            <div class="profile-avatar" id="profileAvatar">
-                👤
-            </div>
-            <h1 class="profile-name" id="profileName">Loading...</h1>
-            <p class="profile-email" id="profileEmail">Loading...</p>
-        </div>
-
-        <!-- Stats -->
-        <div class="profile-stats">
-            <div class="stat-item">
-                <span class="stat-value" id="statCoins">0</span>
-                <span class="stat-label">Coins</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-value" id="statStreak">0</span>
-                <span class="stat-label">Day Streak</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-value" id="statReferrals">0</span>
-                <span class="stat-label">Referrals</span>
-            </div>
-        </div>
-
-        <!-- Profile Menu -->
-        <div class="profile-menu">
-            <a href="profile-edit.html" class="menu-item">
-                <div class="menu-icon">👤</div>
-                <div class="menu-text">Edit Profile</div>
-                <div class="menu-arrow">›</div>
-            </a>
-            
-            <a href="wallet.html" class="menu-item">
-                <div class="menu-icon">💰</div>
-                <div class="menu-text">Wallet & Earnings</div>
-                <div class="menu-arrow">›</div>
-            </a>
-            
-            <a href="referral.html" class="menu-item">
-                <div class="menu-icon">👥</div>
-                <div class="menu-text">Referral Program</div>
-                <div class="menu-arrow">›</div>
-            </a>
-            
-            <a href="settings.html" class="menu-item">
-                <div class="menu-icon">⚙️</div>
-                <div class="menu-text">Settings</div>
-                <div class="menu-arrow">›</div>
-            </a>
-            
-            <a href="help.html" class="menu-item">
-                <div class="menu-icon">❓</div>
-                <div class="menu-text">Help & Support</div>
-                <div class="menu-arrow">›</div>
-            </a>
-            
-            <button id="logoutBtn" class="menu-item" style="border: none; background: none; width: 100%;">
-                <div class="menu-icon" style="background: #fee2e2; color: #dc2626;">🚪</div>
-                <div class="menu-text" style="color: #dc2626;">Logout</div>
-                <div class="menu-arrow" style="color: #dc2626;">›</div>
-            </button>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="p-4">
-            <div class="card-app">
-                <h3 class="text-lg font-bold mb-4">Quick Actions</h3>
-                <div class="grid grid-cols-2 gap-3">
-                    <a href="dashboard.html" class="quick-action">
-                        <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-2">
-                            <span class="text-2xl text-blue-600">🏠</span>
-                        </div>
-                        <div class="font-bold text-sm">Dashboard</div>
-                    </a>
-                    
-                    <a href="withdraw.html" class="quick-action">
-                        <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-2">
-                            <span class="text-2xl text-green-600">💸</span>
-                        </div>
-                        <div class="font-bold text-sm">Withdraw</div>
-                    </a>
+        <!-- Premium Profile Header -->
+        <div class="relative">
+            <div class="bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 h-48 rounded-b-3xl"></div>
+            <div class="absolute -bottom-10 left-1/2 transform -translate-x-1/2">
+                <div class="profile-avatar-premium" id="profileAvatar">
+                    👤
+                    <div class="absolute bottom-0 right-0 w-6 h-6 bg-green-400 rounded-full border-2 border-white"></div>
                 </div>
             </div>
         </div>
+
+        <!-- Profile Content -->
+        <main class="content-with-premium-nav pt-16 px-6">
+            <!-- User Info -->
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-800 mb-1" id="profileName">Loading...</h1>
+                <p class="text-gray-600 mb-4" id="profileEmail">Loading...</p>
+                <div class="bg-gradient-to-r from-amber-400 to-amber-500 text-white px-4 py-2 rounded-full inline-flex items-center gap-2 shadow-lg">
+                    <span class="font-bold" id="premiumCoins">0</span>
+                    <span>Premium Coins</span>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-3 gap-3 mb-8">
+                <div class="card-premium text-center py-4">
+                    <div class="text-xl font-bold text-purple-500 mb-1" id="statCoins">0</div>
+                    <div class="text-xs text-gray-600 font-medium">Coins</div>
+                </div>
+                <div class="card-premium text-center py-4">
+                    <div class="text-xl font-bold text-green-500 mb-1" id="statStreak">0</div>
+                    <div class="text-xs text-gray-600 font-medium">Day Streak</div>
+                </div>
+                <div class="card-premium text-center py-4">
+                    <div class="text-xl font-bold text-blue-500 mb-1" id="statReferrals">0</div>
+                    <div class="text-xs text-gray-600 font-medium">Referrals</div>
+                </div>
+            </div>
+
+            <!-- Profile Menu -->
+            <div class="space-y-3 mb-8">
+                <a href="profile-edit.html" class="card-premium flex items-center justify-between p-4 group hover:scale-105 transition-transform">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                            <span class="text-white text-lg">👤</span>
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-800">Edit Profile</div>
+                            <div class="text-sm text-gray-600">Update your information</div>
+                        </div>
+                    </div>
+                    <div class="text-gray-400 group-hover:text-blue-500 transition-colors">›</div>
+                </a>
+
+                <a href="wallet.html" class="card-premium flex items-center justify-between p-4 group hover:scale-105 transition-transform">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                            <span class="text-white text-lg">💰</span>
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-800">Wallet & Earnings</div>
+                            <div class="text-sm text-gray-600">View your balance</div>
+                        </div>
+                    </div>
+                    <div class="text-gray-400 group-hover:text-green-500 transition-colors">›</div>
+                </a>
+
+                <a href="referral.html" class="card-premium flex items-center justify-between p-4 group hover:scale-105 transition-transform">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                            <span class="text-white text-lg">👥</span>
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-800">Referral Program</div>
+                            <div class="text-sm text-gray-600">Earn with friends</div>
+                        </div>
+                    </div>
+                    <div class="text-gray-400 group-hover:text-purple-500 transition-colors">›</div>
+                </a>
+
+                <a href="settings.html" class="card-premium flex items-center justify-between p-4 group hover:scale-105 transition-transform">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-gray-400 to-gray-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                            <span class="text-white text-lg">⚙️</span>
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-800">Settings</div>
+                            <div class="text-sm text-gray-600">App preferences</div>
+                        </div>
+                    </div>
+                    <div class="text-gray-400 group-hover:text-gray-500 transition-colors">›</div>
+                </a>
+
+                <button id="logoutBtn" class="card-premium flex items-center justify-between p-4 group hover:scale-105 transition-transform w-full text-left">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-red-400 to-red-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                            <span class="text-white text-lg">🚪</span>
+                        </div>
+                        <div>
+                            <div class="font-bold text-red-600">Logout</div>
+                            <div class="text-sm text-red-500">Sign out from Earnzy</div>
+                        </div>
+                    </div>
+                    <div class="text-red-400 group-hover:text-red-500 transition-colors">›</div>
+                </button>
+            </div>
+        </main>
+
+        <!-- Premium Bottom Navigation -->
+        <nav class="premium-nav">
+            <a href="dashboard.html" class="premium-nav-item">
+                <span class="premium-nav-indicator"></span>
+                <span class="premium-nav-icon">🏠</span>
+                <span class="premium-nav-label">Home</span>
+            </a>
+            <a href="watch.html" class="premium-nav-item">
+                <span class="premium-nav-indicator"></span>
+                <span class="premium-nav-icon">🎥</span>
+                <span class="premium-nav-label">Earn</span>
+            </a>
+            <a href="referral.html" class="premium-nav-item">
+                <span class="premium-nav-indicator"></span>
+                <span class="premium-nav-icon">👥</span>
+                <span class="premium-nav-label">Refer</span>
+            </a>
+            <a href="profile.html" class="premium-nav-item active">
+                <span class="premium-nav-indicator"></span>
+                <span class="premium-nav-icon">👤</span>
+                <span class="premium-nav-label">Profile</span>
+            </a>
+        </nav>
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <a href="dashboard.html" class="nav-item">
-            <span class="nav-icon">🏠</span>
-            <span class="nav-label">Home</span>
-        </a>
-        <a href="watch.html" class="nav-item">
-            <span class="nav-icon">🎥</span>
-            <span class="nav-label">Earn</span>
-        </a>
-        <a href="referral.html" class="nav-item">
-            <span class="nav-icon">👥</span>
-            <span class="nav-label">Refer</span>
-        </a>
-        <a href="profile.html" class="nav-item active">
-            <span class="nav-icon">👤</span>
-            <span class="nav-label">Profile</span>
-        </a>
-    </nav>
+    <style>
+        .profile-avatar-premium {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+    </style>
 
     <script>
         // Initialize Supabase
@@ -147,15 +190,19 @@
                 if (error) throw error;
                 
                 // Update profile information
-                document.getElementById('profileName').textContent = data.full_name || 'User';
+                document.getElementById('profileName').textContent = data.full_name || 'Earnzy User';
                 document.getElementById('profileEmail').textContent = data.email;
+                document.getElementById('premiumCoins').textContent = data.total_coins;
                 document.getElementById('statCoins').textContent = data.total_coins;
                 document.getElementById('statStreak').textContent = data.daily_streak;
                 document.getElementById('statReferrals').textContent = data.referral_count || 0;
                 
                 // Update avatar if available
                 if (data.avatar_url) {
-                    document.getElementById('profileAvatar').innerHTML = `<img src="${data.avatar_url}" alt="Profile">`;
+                    document.getElementById('profileAvatar').innerHTML = `
+                        <img src="${data.avatar_url}" alt="Profile" class="w-full h-full rounded-full">
+                        <div class="absolute bottom-0 right-0 w-6 h-6 bg-green-400 rounded-full border-2 border-white"></div>
+                    `;
                 }
                 
             } catch (error) {
@@ -169,10 +216,12 @@
             window.location.href = 'login.html';
         });
         
-        // Bottom nav active state
-        document.querySelectorAll('.nav-item').forEach(item => {
+        // Premium nav active state
+        document.querySelectorAll('.premium-nav-item').forEach(item => {
             item.addEventListener('click', function() {
-                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                document.querySelectorAll('.premium-nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
                 this.classList.add('active');
             });
         });
