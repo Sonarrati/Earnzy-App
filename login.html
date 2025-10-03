@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Earnzy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200">
+            <div class="px-4 py-3">
+                <div class="flex justify-between items-center">
+                    <a href="index.html" class="text-gray-600 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Back
+                    </a>
+                    <h1 class="text-xl font-bold text-gray-800">Earnzy</h1>
+                    <div class="w-6"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="p-6">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl text-purple-600">💰</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome Back to Earnzy</h2>
+                <p class="text-gray-600">Sign in to continue your earning journey</p>
+            </div>
+
+            <!-- Login Form -->
+            <div class="card-app">
+                <form id="loginForm">
+                    <div class="mb-4">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-app mb-4">
+                        Sign In & Continue Earning
+                    </button>
+                </form>
+
+                <div class="text-center">
+                    <p class="text-gray-600 text-sm">
+                        Don't have an account? 
+                        <a href="signup.html" class="text-purple-600 font-medium">Start earning now</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Message Display -->
+            <div id="message" class="hidden"></div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://aiqnodafwmzhwsfunvco.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpcW5vZGFmd216aHdzZnVudmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1MjE4MTcsImV4cCI6MjA3NTA5NzgxN30.OEZloiLjXFdVdgZY6cxqfDlihxRVj36K1N9yjJZzLv8';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Check if user is already logged in
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                window.location.href = 'dashboard.html';
+            }
+        });
+        
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            const submitBtn = document.querySelector('button[type="submit"]');
+            
+            // Show loading state
+            submitBtn.textContent = 'Signing In...';
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) {
+                    messageDiv.className = 'error-message mt-4';
+                    messageDiv.textContent = error.message;
+                    messageDiv.classList.remove('hidden');
+                } else {
+                    messageDiv.className = 'success-message mt-4';
+                    messageDiv.textContent = 'Login successful! Redirecting to your earnings...';
+                    messageDiv.classList.remove('hidden');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                }
+            } catch (error) {
+                messageDiv.className = 'error-message mt-4';
+                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.classList.remove('hidden');
+            } finally {
+                // Reset button
+                submitBtn.textContent = 'Sign In & Continue Earning';
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Auto-focus on email field
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('email').focus();
+        });
+    </script>
+</body>
+</html>
