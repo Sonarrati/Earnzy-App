@@ -199,7 +199,12 @@
                 // Create user in Supabase Auth
                 const { data: authData, error: authError } = await supabase.auth.signUp({
                     email: email,
-                    password: password
+                    password: password,
+                    options: {
+                        data: {
+                            referred_by: referralCode || null
+                        }
+                    }
                 });
                 
                 if (authError) {
@@ -221,7 +226,7 @@
                             email: email,
                             referral_code: user_referral_code,
                             referred_by: referralCode || null,
-                            total_coins: 100, // Welcome bonus
+                            total_coins: 100,
                             daily_streak: 0
                         }
                     ]);
