@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Check-in - Earnzy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Premium Header -->
+        <header class="glass-effect sticky top-0 z-50">
+            <div class="px-6 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <a href="dashboard.html" class="text-gray-600 mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </a>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-800">Daily Check-in</h1>
+                            <p class="text-sm text-gray-600">Claim your daily rewards</p>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-amber-400 to-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                        <span id="userCoins">0</span> 🪙
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content-with-premium-nav p-6">
+            <!-- Current Streak -->
+            <div class="card-premium text-center mb-6">
+                <div class="text-sm text-gray-600 mb-2">Current Streak</div>
+                <div class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 mb-2" id="currentStreak">0</div>
+                <div class="text-gray-600">days in a row</div>
+            </div>
+
+            <!-- Weekly Calendar -->
+            <div class="card-premium mb-6">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">This Week's Rewards</h3>
+                <div class="grid grid-cols-7 gap-2 mb-4">
+                    <!-- Day 1 - Monday -->
+                    <div class="text-center">
+                        <div class="text-xs text-gray-600 mb-1">Mon</div>
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto text-white text-sm font-bold checkin-day" data-day="1">
+                            10
+                        </div>
+                    </div>
+                    <!-- Day 2 - Tuesday -->
+                    <div class="text-center">
+                        <div class="text-xs text-gray-600 mb-1">Tue</div>
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto text-white text-sm font-bold checkin-day" data-day="2">
+                            15
+                        </div>
+                    </div>
+                    <!-- Day 3 - Wednesday -->
+                    <div class="text-center">
+                        <div class="text-xs text-gray-600 mb-1">Wed</div>
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto text-white text-sm font-bold checkin-day" data-day="3">
+                            20
+                        </div>
+                    </div>
+                    <!-- Day 4 - Thursday -->
+                    <div class="text-center">
+                        <div class="text-xs text-gray-600 mb-1">Thu</div>
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto text-white text-sm font-bold checkin-day" data-day="4">
+                            25
+                        </div>
+                    </div>
+                    <!-- Day 5 - Friday -->
+                    <div class="text-center">
+                        <div class="text-xs text-gray-600 mb-1">Fri</div>
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto text-white text-sm font-bold checkin-day" data-day="5">
+                            30
+                        </div>
+                    </div>
+                    <!-- Day 6 - Saturday -->
+                    <div class="text-center">
+                        <div class="text-xs text-gray-600 mb-1">Sat</div>
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto text-white text-sm font-bold checkin-day" data-day="6">
+                            40
+                        </div>
+                    </div>
+                    <!-- Day 7 - Sunday -->
+                    <div class="text-center">
+                        <div class="text-xs text-gray-600 mb-1">Sun</div>
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto text-white text-sm font-bold checkin-day" data-day="7">
+                            50
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Check-in Button -->
+            <div class="card-premium text-center">
+                <div class="text-lg font-bold text-gray-800 mb-2" id="checkinStatus">Ready to Check-in!</div>
+                <p class="text-gray-600 mb-4" id="checkinDescription">Claim your daily reward and continue your streak</p>
+                
+                <button id="checkinBtn" class="btn-premium mb-4">
+                    <span>Check-in Now</span>
+                    <span>🎁</span>
+                </button>
+                
+                <div class="text-sm text-gray-500">
+                    Next check-in available in <span id="nextCheckinTimer">23:59:59</span>
+                </div>
+            </div>
+
+            <!-- Streak Benefits -->
+            <div class="card-premium">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">Streak Benefits</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-gradient-to-br from-green-400 to-green-500 rounded-lg flex items-center justify-center mr-3">
+                                <span class="text-white text-sm">7</span>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-800">7-Day Streak</div>
+                                <div class="text-sm text-gray-600">+10% bonus coins</div>
+                            </div>
+                        </div>
+                        <div class="text-green-500 font-bold">✓</div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-500 rounded-lg flex items-center justify-center mr-3">
+                                <span class="text-white text-sm">30</span>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-800">30-Day Streak</div>
+                                <div class="text-sm text-gray-600">+25% bonus coins</div>
+                            </div>
+                        </div>
+                        <div class="text-gray-400 font-bold">○</div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-gradient-to-br from-purple-400 to-purple-500 rounded-lg flex items-center justify-center mr-3">
+                                <span class="text-white text-sm">90</span>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-800">90-Day Streak</div>
+                                <div class="text-sm text-gray-600">+50% bonus coins</div>
+                            </div>
+                        </div>
+                        <div class="text-gray-400 font-bold">○</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Premium Bottom Navigation -->
+        <nav class="premium-nav">
+            <a href="dashboard.html" class="premium-nav-item">
+                <span class="premium-nav-icon">🏠</span>
+                <span class="premium-nav-label">Home</span>
+            </a>
+            <a href="watch.html" class="premium-nav-item">
+                <span class="premium-nav-icon">🎥</span>
+                <span class="premium-nav-label">Earn</span>
+            </a>
+            <a href="referral.html" class="premium-nav-item">
+                <span class="premium-nav-icon">👥</span>
+                <span class="premium-nav-label">Refer</span>
+            </a>
+            <a href="profile.html" class="premium-nav-item">
+                <span class="premium-nav-icon">👤</span>
+                <span class="premium-nav-label">Profile</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://aiqnodafwmzhwsfunvco.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpcW5vZGFmd216aHdzZnVudmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1MjE4MTcsImV4cCI6MjA3NTA5NzgxN30.OEZloiLjXFdVdgZY6cxqfDlihxRVj36K1N9yjJZzLv8';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        let userId = null;
+        let userStreak = 0;
+        let lastCheckin = null;
+        let todayCheckedIn = false;
+        
+        // Check authentication
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (!session) {
+                window.location.href = 'login.html';
+            } else {
+                userId = session.user.id;
+                loadUserData();
+                startNextCheckinTimer();
+            }
+        });
+        
+        // Load user data
+        async function loadUserData() {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+                
+                if (error) throw error;
+                
+                document.getElementById('userCoins').textContent = data.total_coins;
+                document.getElementById('currentStreak').textContent = data.daily_streak || 0;
+                
+                userStreak = data.daily_streak || 0;
+                lastCheckin = data.last_checkin;
+                
+                // Check if user already checked in today
+                if (lastCheckin) {
+                    const lastCheckinDate = new Date(lastCheckin);
+                    const today = new Date();
+                    
+                    if (lastCheckinDate.toDateString() === today.toDateString()) {
+                        todayCheckedIn = true;
+                        updateCheckinUI(true);
+                    }
+                }
+                
+                updateCalendar();
+                
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+        
+        // Update calendar based on current day
+        function updateCalendar() {
+            const today = new Date();
+            const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            
+            // Convert to our system (1 = Monday, 7 = Sunday)
+            let calendarDay = currentDay === 0 ? 7 : currentDay;
+            
+            document.querySelectorAll('.checkin-day').forEach((day, index) => {
+                const dayNumber = index + 1;
+                
+                if (dayNumber < calendarDay) {
+                    // Past days - marked as collected
+                    day.classList.remove('bg-gradient-to-br', 'from-green-400', 'to-green-500');
+                    day.classList.add('bg-gray-300', 'text-gray-500');
+                    day.innerHTML = '✓';
+                } else if (dayNumber === calendarDay) {
+                    // Today
+                    if (todayCheckedIn) {
+                        day.classList.remove('bg-gradient-to-br', 'from-green-400', 'to-green-500');
+                        day.classList.add('bg-green-500', 'text-white');
+                        day.innerHTML = '✓';
+                    } else {
+                        day.classList.add('pulse');
+                    }
+                } else {
+                    // Future days
+                    day.classList.remove('bg-gradient-to-br', 'from-green-400', 'to-green-500');
+                    day.classList.add('bg-gray-100', 'text-gray-400');
+                }
+            });
+        }
+        
+        // Update check-in UI
+        function updateCheckinUI(checkedIn) {
+            const btn = document.getElementById('checkinBtn');
+            const status = document.getElementById('checkinStatus');
+            const description = document.getElementById('checkinDescription');
+            
+            if (checkedIn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span>Already Checked-in Today</span> <span>✅</span>';
+                btn.classList.remove('btn-premium');
+                btn.classList.add('bg-gray-300', 'text-gray-500');
+                status.textContent = 'Daily Reward Claimed!';
+                description.textContent = 'Come back tomorrow for your next reward';
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Check-in Now</span> <span>🎁</span>';
+                btn.classList.add('btn-premium');
+                btn.classList.remove('bg-gray-300', 'text-gray-500');
+                status.textContent = 'Ready to Check-in!';
+                description.textContent = 'Claim your daily reward and continue your streak';
+            }
+        }
+        
+        // Check-in button click
+        document.getElementById('checkinBtn').addEventListener('click', async () => {
+            if (todayCheckedIn) return;
+            
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            const dayRewards = [50, 10, 15, 20, 25, 30, 40]; // Sunday to Saturday
+            
+            // Get reward for today (adjust for array index)
+            const reward = dayRewards[dayOfWeek];
+            
+            // Calculate streak bonus
+            let streakBonus = 0;
+            if (userStreak >= 7) streakBonus = Math.floor(reward * 0.10);
+            if (userStreak >= 30) streakBonus = Math.floor(reward * 0.25);
+            if (userStreak >= 90) streakBonus = Math.floor(reward * 0.50);
+            
+            const totalReward = reward + streakBonus;
+            
+            await addCoins(totalReward, 'checkin');
+            
+            // Update streak
+            userStreak++;
+            todayCheckedIn = true;
+            
+            // Update user record
+            await updateUserStreak();
+            
+            updateCheckinUI(true);
+            updateCalendar();
+        });
+        
+        // Add coins to user
+        async function addCoins(coins, type) {
+            try {
+                // Get current user data
+                const { data: userData, error: userError } = await supabase
+                    .from('users')
+                    .select('total_coins')
+                    .eq('id', userId)
+                    .single();
+                
+                if (userError) throw userError;
+                
+                // Update coins
+                const newCoins = userData.total_coins + coins;
+                const { error: updateError } = await supabase
+                    .from('users')
+                    .update({ total_coins: newCoins })
+                    .eq('id', userId);
+                
+                if (updateError) throw updateError;
+                
+                // Add to earnings history
+                const { error: earningsError } = await supabase
+                    .from('earnings')
+                    .insert([
+                        { 
+                            user_id: userId,
+                            type: type,
+                            coins: coins,
+                            description: `Daily check-in reward`
+                        }
+                    ]);
+                
+                if (earningsError) throw earningsError;
+                
+                // Update UI
+                document.getElementById('userCoins').textContent = newCoins;
+                document.getElementById('currentStreak').textContent = userStreak;
+                
+                // Show success message
+                showMessage(`Daily check-in complete! +${coins} coins added!`, 'success');
+                
+            } catch (error) {
+                console.error('Error adding coins:', error);
+                showMessage('Error during check-in. Please try again.', 'error');
+            }
+        }
+        
+        // Update user streak
+        async function updateUserStreak() {
+            try {
+                const { error } = await supabase
+                    .from('users')
+                    .update({ 
+                        daily_streak: userStreak,
+                        last_checkin: new Date().toISOString()
+                    })
+                    .eq('id', userId);
+                
+                if (error) throw error;
+                
+            } catch (error) {
+                console.error('Error updating streak:', error);
+            }
+        }
+        
+        // Show message
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${type}-message fade-in`;
+            messageDiv.textContent = message;
+            
+            document.querySelector('main').prepend(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+        
+        // Start next check-in timer
+        function startNextCheckinTimer() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            
+            const updateTimer = () => {
+                const now = new Date();
+                const diff = tomorrow - now;
+                
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.getElementById('nextCheckinTimer').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            };
+            
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+        
+        // Premium nav active state
+        document.querySelectorAll('.premium-nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.premium-nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
