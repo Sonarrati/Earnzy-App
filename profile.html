@@ -14,9 +14,14 @@
         <div class="relative">
             <div class="bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 h-48 rounded-b-3xl"></div>
             <div class="absolute -bottom-10 left-1/2 transform -translate-x-1/2">
-                <div class="profile-avatar-premium" id="profileAvatar">
-                    👤
-                    <div class="absolute bottom-0 right-0 w-6 h-6 bg-green-400 rounded-full border-2 border-white"></div>
+                <div class="profile-avatar-premium relative" id="profileAvatar" onclick="document.getElementById('avatarInput').click()">
+                    <div id="avatarImage" class="w-full h-full rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-2xl">
+                        👤
+                    </div>
+                    <div class="absolute bottom-0 right-0 w-6 h-6 bg-green-400 rounded-full border-2 border-white flex items-center justify-center">
+                        <span class="text-white text-xs">+</span>
+                    </div>
+                    <input type="file" id="avatarInput" accept="image/*" class="hidden" onchange="uploadAvatar(this.files[0])">
                 </div>
             </div>
         </div>
@@ -54,7 +59,7 @@
                 <a href="profile-edit.html" class="card-premium flex items-center justify-between p-4 group hover:scale-105 transition-transform">
                     <div class="flex items-center">
                         <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                            <span class="text-white text-lg">👤</span>
+                            <span class="text-white text-lg">✏️</span>
                         </div>
                         <div>
                             <div class="font-bold text-gray-800">Edit Profile</div>
@@ -90,19 +95,6 @@
                     <div class="text-gray-400 group-hover:text-purple-500 transition-colors">›</div>
                 </a>
 
-                <a href="settings.html" class="card-premium flex items-center justify-between p-4 group hover:scale-105 transition-transform">
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-gradient-to-br from-gray-400 to-gray-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                            <span class="text-white text-lg">⚙️</span>
-                        </div>
-                        <div>
-                            <div class="font-bold text-gray-800">Settings</div>
-                            <div class="text-sm text-gray-600">App preferences</div>
-                        </div>
-                    </div>
-                    <div class="text-gray-400 group-hover:text-gray-500 transition-colors">›</div>
-                </a>
-
                 <button id="logoutBtn" class="card-premium flex items-center justify-between p-4 group hover:scale-105 transition-transform w-full text-left">
                     <div class="flex items-center">
                         <div class="w-12 h-12 bg-gradient-to-br from-red-400 to-red-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
@@ -121,26 +113,39 @@
         <!-- Premium Bottom Navigation -->
         <nav class="premium-nav">
             <a href="dashboard.html" class="premium-nav-item">
-                <span class="premium-nav-indicator"></span>
                 <span class="premium-nav-icon">🏠</span>
                 <span class="premium-nav-label">Home</span>
             </a>
             <a href="watch.html" class="premium-nav-item">
-                <span class="premium-nav-indicator"></span>
                 <span class="premium-nav-icon">🎥</span>
                 <span class="premium-nav-label">Earn</span>
             </a>
             <a href="referral.html" class="premium-nav-item">
-                <span class="premium-nav-indicator"></span>
                 <span class="premium-nav-icon">👥</span>
                 <span class="premium-nav-label">Refer</span>
             </a>
             <a href="profile.html" class="premium-nav-item active">
-                <span class="premium-nav-indicator"></span>
                 <span class="premium-nav-icon">👤</span>
                 <span class="premium-nav-label">Profile</span>
             </a>
         </nav>
+
+        <!-- Avatar Upload Progress -->
+        <div id="uploadProgress" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 hidden">
+            <div class="bg-white rounded-2xl p-4 shadow-2xl border border-gray-200 min-w-64">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="text-blue-600">📤</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-800">Uploading Avatar</div>
+                        <div class="w-full bg-gray-200 rounded-full h-1 mt-1">
+                            <div id="progressBar" class="bg-blue-500 h-1 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <style>
@@ -157,6 +162,29 @@
             color: white;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
             position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .profile-avatar-premium:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-avatar-premium:hover::after {
+            content: 'Change';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
         }
     </style>
 
@@ -197,17 +225,113 @@
                 document.getElementById('statStreak').textContent = data.daily_streak;
                 document.getElementById('statReferrals').textContent = data.referral_count || 0;
                 
-                // Update avatar if available
+                // Load avatar if exists
                 if (data.avatar_url) {
-                    document.getElementById('profileAvatar').innerHTML = `
-                        <img src="${data.avatar_url}" alt="Profile" class="w-full h-full rounded-full">
-                        <div class="absolute bottom-0 right-0 w-6 h-6 bg-green-400 rounded-full border-2 border-white"></div>
-                    `;
+                    await loadAvatar(data.avatar_url);
                 }
                 
             } catch (error) {
                 console.error('Error loading profile data:', error);
             }
+        }
+        
+        // Load avatar image
+        async function loadAvatar(avatarUrl) {
+            try {
+                const { data, error } = await supabase
+                    .storage
+                    .from('avatars')
+                    .download(avatarUrl);
+                
+                if (error) throw error;
+                
+                // Create object URL for the image
+                const url = URL.createObjectURL(data);
+                document.getElementById('avatarImage').innerHTML = `<img src="${url}" alt="Profile" class="w-full h-full rounded-full object-cover">`;
+                
+            } catch (error) {
+                console.error('Error loading avatar:', error);
+                // If error, show default avatar
+                document.getElementById('avatarImage').innerHTML = '👤';
+            }
+        }
+        
+        // Upload avatar function
+        async function uploadAvatar(file) {
+            if (!file) return;
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showMessage('Please select an image file', 'error');
+                return;
+            }
+            
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showMessage('Image size should be less than 5MB', 'error');
+                return;
+            }
+            
+            // Show upload progress
+            const progressDiv = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('progressBar');
+            progressDiv.classList.remove('hidden');
+            
+            try {
+                // Generate unique file name
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${userId}/avatar.${fileExt}`;
+                
+                // Upload file to Supabase Storage
+                const { data, error } = await supabase
+                    .storage
+                    .from('avatars')
+                    .upload(fileName, file, {
+                        cacheControl: '3600',
+                        upsert: true
+                    });
+                
+                if (error) throw error;
+                
+                // Update user record with avatar URL
+                const { error: updateError } = await supabase
+                    .from('users')
+                    .update({ avatar_url: data.path })
+                    .eq('id', userId);
+                
+                if (updateError) throw updateError;
+                
+                // Update avatar display
+                await loadAvatar(data.path);
+                
+                // Show success message
+                showMessage('Profile picture updated successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error uploading avatar:', error);
+                showMessage('Error uploading profile picture', 'error');
+            } finally {
+                // Hide progress after delay
+                setTimeout(() => {
+                    progressDiv.classList.add('hidden');
+                    progressBar.style.width = '0%';
+                }, 1000);
+            }
+        }
+        
+        // Show message
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `fixed top-4 left-1/2 transform -translate-x-1/2 z-50 p-4 rounded-lg ${
+                type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+            } fade-in`;
+            messageDiv.textContent = message;
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
         }
         
         // Logout
