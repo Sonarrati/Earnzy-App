@@ -1,1 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch Ads - Earnzy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Premium Header -->
+        <header class="glass-effect sticky top-0 z-50">
+            <div class="px-6 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <a href="dashboard.html" class="text-gray-600 mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </a>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-800">Watch Ads</h1>
+                            <p class="text-sm text-gray-600">Earn coins by watching</p>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-amber-400 to-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                        <span id="userCoins">0</span> 🪙
+                    </div>
+                </div>
+            </div>
+        </header>
 
+        <!-- Main Content -->
+        <main class="content-with-premium-nav p-6">
+            <!-- Current Balance -->
+            <div class="card-premium text-center mb-6">
+                <div class="text-sm text-gray-600 mb-2">Available Balance</div>
+                <div class="coin-display" id="currentBalance">0</div>
+                <div class="text-gray-600">coins</div>
+            </div>
+
+            <!-- Video Ads -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">Available Videos</h3>
+                <div class="space-y-4">
+                    <!-- Video 1 -->
+                    <div class="card-premium">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-gradient-to-br from-red-400 to-red-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                                    <span class="text-white text-lg">🎬</span>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-800">Short Ad Video</div>
+                                    <div class="text-sm text-gray-600">30 seconds</div>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-r from-green-400 to-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                +15 🪙
+                            </div>
+                        </div>
+                        <button class="btn-premium watch-btn" data-coins="15" data-duration="30">
+                            <span>Watch Now</span>
+                            <span>▶️</span>
+                        </button>
+                    </div>
+
+                    <!-- Video 2 -->
+                    <div class="card-premium">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                                    <span class="text-white text-lg">📺</span>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-800">Product Review</div>
+                                    <div class="text-sm text-gray-600">45 seconds</div>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-r from-green-400 to-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                +25 🪙
+                            </div>
+                        </div>
+                        <button class="btn-premium watch-btn" data-coins="25" data-duration="45">
+                            <span>Watch Now</span>
+                            <span>▶️</span>
+                        </button>
+                    </div>
+
+                    <!-- Video 3 -->
+                    <div class="card-premium">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                                    <span class="text-white text-lg">🎮</span>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-800">Game Promotion</div>
+                                    <div class="text-sm text-gray-600">60 seconds</div>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-r from-green-400 to-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                +35 🪙
+                            </div>
+                        </div>
+                        <button class="btn-premium watch-btn" data-coins="35" data-duration="60">
+                            <span>Watch Now</span>
+                            <span>▶️</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Player (Hidden by default) -->
+            <div id="videoPlayer" class="card-premium hidden">
+                <div class="text-center mb-4">
+                    <div class="text-lg font-bold text-gray-800" id="videoTitle">Playing Ad</div>
+                    <div class="text-sm text-gray-600" id="timeRemaining">Time remaining: 30s</div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl h-48 flex items-center justify-center mb-4">
+                    <div class="text-white text-center">
+                        <div class="text-4xl mb-2">📺</div>
+                        <div class="text-lg">Advertisement Playing</div>
+                        <div class="text-sm text-gray-300 mt-2" id="adTimer">30</div>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button id="skipBtn" class="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-3 rounded-xl font-medium">
+                        Skip Ad
+                    </button>
+                    <button id="claimBtn" class="flex-1 btn-premium hidden">
+                        Claim Coins
+                    </button>
+                </div>
+            </div>
+
+            <!-- Daily Limit -->
+            <div class="card-premium">
+                <h3 class="text-lg font-bold mb-3 text-gray-800">Daily Progress</h3>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-gray-600">Videos watched today</span>
+                    <span class="text-sm font-bold text-gray-800" id="videosWatched">0/10</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="progressBar" class="bg-gradient-to-r from-green-400 to-green-500 h-2 rounded-full" style="width: 0%"></div>
+                </div>
+                <div class="text-xs text-gray-500 mt-2 text-center">
+                    Reset in <span id="resetTimer">23:59:59</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- Premium Bottom Navigation -->
+        <nav class="premium-nav">
+            <a href="dashboard.html" class="premium-nav-item">
+                <span class="premium-nav-icon">🏠</span>
+                <span class="premium-nav-label">Home</span>
+            </a>
+            <a href="watch.html" class="premium-nav-item active">
+                <span class="premium-nav-icon">🎥</span>
+                <span class="premium-nav-label">Earn</span>
+            </a>
+            <a href="referral.html" class="premium-nav-item">
+                <span class="premium-nav-icon">👥</span>
+                <span class="premium-nav-label">Refer</span>
+            </a>
+            <a href="profile.html" class="premium-nav-item">
+                <span class="premium-nav-icon">👤</span>
+                <span class="premium-nav-label">Profile</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://aiqnodafwmzhwsfunvco.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpcW5vZGFmd216aHdzZnVudmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1MjE4MTcsImV4cCI6MjA3NTA5NzgxN30.OEZloiLjXFdVdgZY6cxqfDlihxRVj36K1N9yjJZzLv8';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        let userId = null;
+        let currentVideoCoins = 0;
+        let countdownInterval = null;
+        
+        // Check authentication
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (!session) {
+                window.location.href = 'login.html';
+            } else {
+                userId = session.user.id;
+                loadUserData();
+                startResetTimer();
+            }
+        });
+        
+        // Load user data
+        async function loadUserData() {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+                
+                if (error) throw error;
+                
+                document.getElementById('userCoins').textContent = data.total_coins;
+                document.getElementById('currentBalance').textContent = data.total_coins;
+                
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+        
+        // Watch button click handler
+        document.querySelectorAll('.watch-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const coins = parseInt(this.getAttribute('data-coins'));
+                const duration = parseInt(this.getAttribute('data-duration'));
+                
+                startVideoAd(coins, duration);
+            });
+        });
+        
+        // Start video ad
+        function startVideoAd(coins, duration) {
+            currentVideoCoins = coins;
+            
+            // Hide video list, show video player
+            document.querySelectorAll('.card-premium:not(#videoPlayer)').forEach(card => {
+                card.style.display = 'none';
+            });
+            document.getElementById('videoPlayer').classList.remove('hidden');
+            
+            // Update video info
+            document.getElementById('timeRemaining').textContent = `Time remaining: ${duration}s`;
+            document.getElementById('adTimer').textContent = duration;
+            
+            // Start countdown
+            let timeLeft = duration;
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('adTimer').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    showClaimButton();
+                }
+            }, 1000);
+        }
+        
+        // Show claim button
+        function showClaimButton() {
+            document.getElementById('skipBtn').classList.add('hidden');
+            document.getElementById('claimBtn').classList.remove('hidden');
+        }
+        
+        // Skip button
+        document.getElementById('skipBtn').addEventListener('click', () => {
+            clearInterval(countdownInterval);
+            resetVideoPlayer();
+        });
+        
+        // Claim button
+        document.getElementById('claimBtn').addEventListener('click', async () => {
+            await addCoins(currentVideoCoins, 'watch');
+            resetVideoPlayer();
+        });
+        
+        // Reset video player
+        function resetVideoPlayer() {
+            clearInterval(countdownInterval);
+            document.getElementById('videoPlayer').classList.add('hidden');
+            document.querySelectorAll('.card-premium:not(#videoPlayer)').forEach(card => {
+                card.style.display = 'block';
+            });
+            document.getElementById('skipBtn').classList.remove('hidden');
+            document.getElementById('claimBtn').classList.add('hidden');
+        }
+        
+        // Add coins to user
+        async function addCoins(coins, type) {
+            try {
+                // Get current user data
+                const { data: userData, error: userError } = await supabase
+                    .from('users')
+                    .select('total_coins')
+                    .eq('id', userId)
+                    .single();
+                
+                if (userError) throw userError;
+                
+                // Update coins
+                const newCoins = userData.total_coins + coins;
+                const { error: updateError } = await supabase
+                    .from('users')
+                    .update({ total_coins: newCoins })
+                    .eq('id', userId);
+                
+                if (updateError) throw updateError;
+                
+                // Add to earnings history
+                const { error: earningsError } = await supabase
+                    .from('earnings')
+                    .insert([
+                        { 
+                            user_id: userId,
+                            type: type,
+                            coins: coins,
+                            description: `Watched video ad`
+                        }
+                    ]);
+                
+                if (earningsError) throw earningsError;
+                
+                // Update UI
+                document.getElementById('userCoins').textContent = newCoins;
+                document.getElementById('currentBalance').textContent = newCoins;
+                
+                // Show success message
+                showMessage(`+${coins} coins added to your account!`, 'success');
+                
+            } catch (error) {
+                console.error('Error adding coins:', error);
+                showMessage('Error adding coins. Please try again.', 'error');
+            }
+        }
+        
+        // Show message
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${type}-message fade-in`;
+            messageDiv.textContent = message;
+            
+            document.querySelector('main').prepend(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+        
+        // Start reset timer
+        function startResetTimer() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            
+            const updateTimer = () => {
+                const now = new Date();
+                const diff = tomorrow - now;
+                
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.getElementById('resetTimer').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            };
+            
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+        
+        // Premium nav active state
+        document.querySelectorAll('.premium-nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.premium-nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
