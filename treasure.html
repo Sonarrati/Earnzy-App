@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treasure Box - Earnzy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Premium Header -->
+        <header class="glass-effect sticky top-0 z-50">
+            <div class="px-6 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <a href="dashboard.html" class="text-gray-600 mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </a>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-800">Treasure Box</h1>
+                            <p class="text-sm text-gray-600">Open boxes for amazing rewards</p>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-amber-400 to-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                        <span id="userCoins">0</span> 🪙
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content-with-premium-nav p-6">
+            <!-- Treasure Box Display -->
+            <div class="text-center mb-8">
+                <div class="treasure-box mx-auto mb-6" id="treasureBox">
+                    <div class="box-front">
+                        <div class="text-6xl mb-4">🎁</div>
+                        <div class="text-xl font-bold text-white">Mystery Box</div>
+                        <div class="text-white text-sm opacity-90">Tap to Open</div>
+                    </div>
+                    <div class="box-back hidden">
+                        <div class="text-6xl mb-4" id="rewardIcon">💰</div>
+                        <div class="text-xl font-bold text-white" id="rewardAmount">0 Coins</div>
+                        <div class="text-white text-sm opacity-90">Congratulations!</div>
+                    </div>
+                </div>
+                
+                <button id="openBoxBtn" class="btn-premium max-w-xs mx-auto">
+                    <span>Open Treasure Box</span>
+                    <span>🔓</span>
+                </button>
+            </div>
+
+            <!-- Today's Rewards -->
+            <div class="card-premium mb-6">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">Today's Potential Rewards</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center p-4 bg-gradient-to-br from-yellow-50 to-amber-50 rounded-2xl border border-amber-200">
+                        <div class="text-2xl mb-2">💰</div>
+                        <div class="font-bold text-amber-800">10-50 Coins</div>
+                        <div class="text-xs text-amber-600">Common Reward</div>
+                    </div>
+                    <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl border border-purple-200">
+                        <div class="text-2xl mb-2">💎</div>
+                        <div class="font-bold text-purple-800">51-100 Coins</div>
+                        <div class="text-xs text-purple-600">Rare Reward</div>
+                    </div>
+                    <div class="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-200">
+                        <div class="text-2xl mb-2">🎯</div>
+                        <div class="font-bold text-green-800">101-200 Coins</div>
+                        <div class="text-xs text-green-600">Epic Reward</div>
+                    </div>
+                    <div class="text-center p-4 bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl border border-red-200">
+                        <div class="text-2xl mb-2">🏆</div>
+                        <div class="font-bold text-red-800">201-500 Coins</div>
+                        <div class="text-xs text-red-600">Legendary Reward</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Stats -->
+            <div class="card-premium">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">Today's Progress</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <div class="text-sm text-gray-600">Boxes Opened Today</div>
+                        <div class="text-2xl font-bold text-purple-600" id="boxesOpened">0/1</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm text-gray-600">Best Reward Today</div>
+                        <div class="text-2xl font-bold text-green-600" id="bestReward">0</div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-sm text-gray-600 mb-2">Next box available in</div>
+                    <div class="text-lg font-bold text-purple-600" id="nextBoxTimer">23:59:59</div>
+                </div>
+            </div>
+
+            <!-- Recent Rewards -->
+            <div class="card-premium">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">Recent Rewards</h3>
+                <div id="recentRewards" class="space-y-3">
+                    <div class="text-center text-gray-500 py-4">
+                        <div class="text-4xl mb-2">📦</div>
+                        <p>No boxes opened yet</p>
+                        <p class="text-sm">Open your first treasure box to see rewards here</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Premium Bottom Navigation -->
+        <nav class="premium-nav">
+            <a href="dashboard.html" class="premium-nav-item">
+                <span class="premium-nav-icon">🏠</span>
+                <span class="premium-nav-label">Home</span>
+            </a>
+            <a href="watch.html" class="premium-nav-item">
+                <span class="premium-nav-icon">🎥</span>
+                <span class="premium-nav-label">Earn</span>
+            </a>
+            <a href="referral.html" class="premium-nav-item">
+                <span class="premium-nav-icon">👥</span>
+                <span class="premium-nav-label">Refer</span>
+            </a>
+            <a href="profile.html" class="premium-nav-item">
+                <span class="premium-nav-icon">👤</span>
+                <span class="premium-nav-label">Profile</span>
+            </a>
+        </nav>
+    </div>
+
+    <style>
+        .treasure-box {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.5s ease;
+        }
+
+        .box-front, .box-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            backface-visibility: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .box-front {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+        }
+
+        .box-back {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+            transform: rotateY(180deg);
+        }
+
+        .treasure-box.opened .box-front {
+            transform: rotateY(180deg);
+        }
+
+        .treasure-box.opened .box-back {
+            transform: rotateY(0deg);
+        }
+
+        .treasure-box:active {
+            transform: scale(0.95);
+        }
+    </style>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://aiqnodafwmzhwsfunvco.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpcW5vZGFmd216aHdzZnVudmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1MjE4MTcsImV4cCI6MjA3NTA5NzgxN30.OEZloiLjXFdVdgZY6cxqfDlihxRVj36K1N9yjJZzLv8';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        let userId = null;
+        let boxesOpenedToday = 0;
+        let bestRewardToday = 0;
+        let canOpenBox = true;
+        
+        // Check authentication
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (!session) {
+                window.location.href = 'login.html';
+            } else {
+                userId = session.user.id;
+                loadUserData();
+                startNextBoxTimer();
+                loadRecentRewards();
+            }
+        });
+        
+        // Load user data
+        async function loadUserData() {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+                
+                if (error) throw error;
+                
+                document.getElementById('userCoins').textContent = data.total_coins;
+                
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+        
+        // Open box button click
+        document.getElementById('openBoxBtn').addEventListener('click', openTreasureBox);
+        document.getElementById('treasureBox').addEventListener('click', openTreasureBox);
+        
+        // Open treasure box
+        async function openTreasureBox() {
+            if (!canOpenBox) {
+                showMessage('You have already opened your box for today!', 'error');
+                return;
+            }
+            
+            // Disable button during animation
+            document.getElementById('openBoxBtn').disabled = true;
+            document.getElementById('openBoxBtn').classList.add('loading');
+            
+            // Generate random reward
+            const reward = generateReward();
+            const rewardIcons = ['💰', '💎', '🎯', '🏆', '💸', '🪙'];
+            const randomIcon = rewardIcons[Math.floor(Math.random() * rewardIcons.length)];
+            
+            // Update box display
+            document.getElementById('rewardAmount').textContent = `${reward} Coins`;
+            document.getElementById('rewardIcon').textContent = randomIcon;
+            
+            // Animate box opening
+            const box = document.getElementById('treasureBox');
+            box.classList.add('opened');
+            
+            // Wait for animation to complete
+            setTimeout(async () => {
+                await addCoins(reward, 'treasure');
+                
+                // Update stats
+                boxesOpenedToday++;
+                bestRewardToday = Math.max(bestRewardToday, reward);
+                updateStats();
+                canOpenBox = false;
+                
+                // Update button
+                document.getElementById('openBoxBtn').disabled = true;
+                document.getElementById('openBoxBtn').innerHTML = '<span>Come Back Tomorrow</span> <span>⏰</span>';
+                document.getElementById('openBoxBtn').classList.remove('btn-premium', 'loading');
+                document.getElementById('openBoxBtn').classList.add('bg-gray-300', 'text-gray-500');
+                
+            }, 1500);
+        }
+        
+        // Generate random reward
+        function generateReward() {
+            const rewards = {
+                common: { min: 10, max: 50, probability: 0.6 },
+                rare: { min: 51, max: 100, probability: 0.25 },
+                epic: { min: 101, max: 200, probability: 0.12 },
+                legendary: { min: 201, max: 500, probability: 0.03 }
+            };
+            
+            const random = Math.random();
+            let rewardType = 'common';
+            
+            if (random < rewards.legendary.probability) rewardType = 'legendary';
+            else if (random < rewards.epic.probability + rewards.legendary.probability) rewardType = 'epic';
+            else if (random < rewards.rare.probability + rewards.epic.probability + rewards.legendary.probability) rewardType = 'rare';
+            
+            const type = rewards[rewardType];
+            return Math.floor(Math.random() * (type.max - type.min + 1)) + type.min;
+        }
+        
+        // Update statistics
+        function updateStats() {
+            document.getElementById('boxesOpened').textContent = `${boxesOpenedToday}/1`;
+            document.getElementById('bestReward').textContent = bestRewardToday;
+        }
+        
+        // Add coins to user
+        async function addCoins(coins, type) {
+            try {
+                // Get current user data
+                const { data: userData, error: userError } = await supabase
+                    .from('users')
+                    .select('total_coins')
+                    .eq('id', userId)
+                    .single();
+                
+                if (userError) throw userError;
+                
+                // Update coins
+                const newCoins = userData.total_coins + coins;
+                const { error: updateError } = await supabase
+                    .from('users')
+                    .update({ total_coins: newCoins })
+                    .eq('id', userId);
+                
+                if (updateError) throw updateError;
+                
+                // Add to earnings history
+                const { error: earningsError } = await supabase
+                    .from('earnings')
+                    .insert([
+                        { 
+                            user_id: userId,
+                            type: type,
+                            coins: coins,
+                            description: `Treasure box reward`
+                        }
+                    ]);
+                
+                if (earningsError) throw earningsError;
+                
+                // Update UI
+                document.getElementById('userCoins').textContent = newCoins;
+                
+                // Add to recent rewards
+                addRecentReward(coins, type);
+                
+                // Show success message
+                showMessage(`Congratulations! You found ${coins} coins in the treasure box!`, 'success');
+                
+            } catch (error) {
+                console.error('Error adding coins:', error);
+                showMessage('Error opening treasure box. Please try again.', 'error');
+            }
+        }
+        
+        // Add to recent rewards
+        function addRecentReward(coins, type) {
+            const rewardsContainer = document.getElementById('recentRewards');
+            const rewardElement = document.createElement('div');
+            
+            rewardElement.className = 'flex items-center justify-between py-2';
+            rewardElement.innerHTML = `
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-500 rounded-xl flex items-center justify-center mr-3">
+                        <span class="text-white">🎁</span>
+                    </div>
+                    <div>
+                        <div class="font-medium text-gray-800">Treasure Box</div>
+                        <div class="text-xs text-gray-500">${new Date().toLocaleTimeString()}</div>
+                    </div>
+                </div>
+                <div class="font-bold text-green-600">+${coins}</div>
+            `;
+            
+            // Remove the placeholder if it exists
+            const placeholder = rewardsContainer.querySelector('.text-center');
+            if (placeholder) {
+                placeholder.remove();
+            }
+            
+            rewardsContainer.prepend(rewardElement);
+        }
+        
+        // Load recent rewards
+        async function loadRecentRewards() {
+            try {
+                const { data, error } = await supabase
+                    .from('earnings')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .eq('type', 'treasure')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                if (error) throw error;
+                
+                const rewardsContainer = document.getElementById('recentRewards');
+                rewardsContainer.innerHTML = '';
+                
+                if (data.length === 0) {
+                    rewardsContainer.innerHTML = `
+                        <div class="text-center text-gray-500 py-4">
+                            <div class="text-4xl mb-2">📦</div>
+                            <p>No boxes opened yet</p>
+                            <p class="text-sm">Open your first treasure box to see rewards here</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                data.forEach(earning => {
+                    const rewardElement = document.createElement('div');
+                    rewardElement.className = 'flex items-center justify-between py-2';
+                    rewardElement.innerHTML = `
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-500 rounded-xl flex items-center justify-center mr-3">
+                                <span class="text-white">🎁</span>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-800">Treasure Box</div>
+                                <div class="text-xs text-gray-500">${new Date(earning.created_at).toLocaleTimeString()}</div>
+                            </div>
+                        </div>
+                        <div class="font-bold text-green-600">+${earning.coins}</div>
+                    `;
+                    
+                    rewardsContainer.appendChild(rewardElement);
+                });
+                
+            } catch (error) {
+                console.error('Error loading recent rewards:', error);
+            }
+        }
+        
+        // Show message
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${type}-message fade-in`;
+            messageDiv.textContent = message;
+            
+            document.querySelector('main').prepend(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+        
+        // Start next box timer
+        function startNextBoxTimer() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            
+            const updateTimer = () => {
+                const now = new Date();
+                const diff = tomorrow - now;
+                
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.getElementById('nextBoxTimer').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            };
+            
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+        
+        // Premium nav active state
+        document.querySelectorAll('.premium-nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.premium-nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
