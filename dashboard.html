@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Earnzy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+            <div class="px-4 py-3">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Earnzy</h1>
+                        <p class="text-sm text-gray-600" id="userEmail">Loading...</p>
+                    </div>
+                    <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded-lg font-medium text-sm hover:bg-red-600 transition-colors">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content-with-nav p-4">
+            <!-- Welcome Card -->
+            <div class="card-app mb-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800">Welcome back! 👋</h2>
+                        <p class="text-gray-600 text-sm">Ready to earn more coins?</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-600">Referral Code</p>
+                        <p class="font-mono font-bold text-purple-600" id="referralCode">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="stat-card">
+                    <div class="text-2xl font-bold text-white" id="totalCoins">0</div>
+                    <div class="text-sm opacity-90">Total Coins</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-2xl font-bold text-white" id="dailyStreak">0</div>
+                    <div class="text-sm opacity-90">Day Streak</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="mb-6">
+                <h3 class="text-lg font-bold mb-3">Quick Actions</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <a href="watch.html" class="quick-action">
+                        <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                            <span class="text-2xl text-blue-600">🎥</span>
+                        </div>
+                        <div class="font-bold text-sm">Watch Ads</div>
+                        <div class="text-xs text-gray-600">10-20 coins</div>
+                    </a>
+                    
+                    <a href="scratch.html" class="quick-action">
+                        <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                            <span class="text-2xl text-purple-600">✨</span>
+                        </div>
+                        <div class="font-bold text-sm">Scratch Cards</div>
+                        <div class="text-xs text-gray-600">3 cards left</div>
+                    </a>
+                    
+                    <a href="checkin.html" class="quick-action">
+                        <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                            <span class="text-2xl text-green-600">📅</span>
+                        </div>
+                        <div class="font-bold text-sm">Daily Check-in</div>
+                        <div class="text-xs text-gray-600">Claim reward</div>
+                    </a>
+                    
+                    <a href="treasure.html" class="quick-action">
+                        <div class="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                            <span class="text-2xl text-red-600">🎁</span>
+                        </div>
+                        <div class="font-bold text-sm">Treasure Box</div>
+                        <div class="text-xs text-gray-600">1 box today</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- More Earning Options -->
+            <div class="mb-6">
+                <h3 class="text-lg font-bold mb-3">More Ways to Earn</h3>
+                <div class="space-y-3">
+                    <a href="referral.html" class="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl border border-purple-100 hover:shadow-md transition-all">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mr-3">
+                                <span class="text-xl text-purple-600">👥</span>
+                            </div>
+                            <div>
+                                <div class="font-bold">Refer Friends</div>
+                                <div class="text-sm text-gray-600">Earn 250 coins each</div>
+                            </div>
+                        </div>
+                        <div class="text-purple-600 font-bold">→</div>
+                    </a>
+                    
+                    <a href="withdraw.html" class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-100 hover:shadow-md transition-all">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mr-3">
+                                <span class="text-xl text-green-600">💸</span>
+                            </div>
+                            <div>
+                                <div class="font-bold">Withdraw Earnings</div>
+                                <div class="text-sm text-gray-600">Convert to cash</div>
+                            </div>
+                        </div>
+                        <div class="text-green-600 font-bold">→</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card-app">
+                <h3 class="text-lg font-bold mb-4">Recent Activity</h3>
+                <div id="recentEarnings" class="space-y-3">
+                    <div class="text-center text-gray-500 py-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                            <span class="text-gray-400">📊</span>
+                        </div>
+                        <p>No activity yet</p>
+                        <p class="text-sm">Start earning to see your activity here</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="dashboard.html" class="nav-item active">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Home</span>
+            </a>
+            <a href="watch.html" class="nav-item">
+                <span class="nav-icon">🎥</span>
+                <span class="nav-label">Earn</span>
+            </a>
+            <a href="referral.html" class="nav-item">
+                <span class="nav-icon">👥</span>
+                <span class="nav-label">Refer</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span class="nav-label">Profile</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://aiqnodafwmzhwsfunvco.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpcW5vZGFmd216aHdzZnVudmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1MjE4MTcsImV4cCI6MjA3NTA5NzgxN30.OEZloiLjXFdVdgZY6cxqfDlihxRVj36K1N9yjJZzLv8';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        let userId = null;
+        
+        // Check authentication
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (!session) {
+                window.location.href = 'login.html';
+            } else {
+                userId = session.user.id;
+                loadUserData();
+            }
+        });
+        
+        // Load user data
+        async function loadUserData() {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+                
+                if (error) throw error;
+                
+                document.getElementById('userEmail').textContent = data.email;
+                document.getElementById('referralCode').textContent = data.referral_code;
+                document.getElementById('totalCoins').textContent = data.total_coins;
+                document.getElementById('dailyStreak').textContent = data.daily_streak;
+                
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+        
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = 'login.html';
+        });
+        
+        // Bottom nav active state
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
