@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Earnzy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Premium Admin Header -->
+        <header class="glass-effect sticky top-0 z-50">
+            <div class="px-6 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <a href="dashboard.html" class="text-gray-600 mr-3 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                            </svg>
+                            User App
+                        </a>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-800">Admin Panel</h1>
+                            <p class="text-sm text-gray-600">Manage your Earnzy application</p>
+                        </div>
+                    </div>
+                    <button id="logoutBtn" class="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-xl font-medium text-sm shadow-lg">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content-with-premium-nav p-6">
+            <!-- Admin Stats -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="card-premium">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mr-4">
+                            <span class="text-white text-xl">👥</span>
+                        </div>
+                        <div>
+                            <div class="text-gray-600">Total Users</div>
+                            <div class="text-2xl font-bold text-blue-600" id="totalUsers">0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-premium">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center mr-4">
+                            <span class="text-white text-xl">💰</span>
+                        </div>
+                        <div>
+                            <div class="text-gray-600">Total Coins</div>
+                            <div class="text-2xl font-bold text-green-600" id="totalCoins">0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-premium">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center mr-4">
+                            <span class="text-white text-xl">⏳</span>
+                        </div>
+                        <div>
+                            <div class="text-gray-600">Pending Withdrawals</div>
+                            <div class="text-2xl font-bold text-yellow-600" id="pendingWithdrawals">0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-premium">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center mr-4">
+                            <span class="text-white text-xl">💸</span>
+                        </div>
+                        <div>
+                            <div class="text-gray-600">Total Withdrawn</div>
+                            <div class="text-2xl font-bold text-purple-600" id="totalWithdrawn">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Withdrawal Requests -->
+            <div class="card-premium mb-6">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">Pending Withdrawal Requests</h3>
+                <div id="withdrawalRequests" class="space-y-4">
+                    <div class="text-center text-gray-500 py-8">
+                        <div class="text-4xl mb-2">💸</div>
+                        <p>No pending withdrawal requests</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Users -->
+            <div class="card-premium">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">Recent Users</h3>
+                <div id="recentUsers" class="space-y-3">
+                    <div class="text-center text-gray-500 py-4">
+                        <div class="text-4xl mb-2">👥</div>
+                        <p>Loading users...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Premium Bottom Navigation -->
+        <nav class="premium-nav">
+            <a href="dashboard.html" class="premium-nav-item">
+                <span class="premium-nav-icon">🏠</span>
+                <span class="premium-nav-label">Home</span>
+            </a>
+            <a href="admin.html" class="premium-nav-item active">
+                <span class="premium-nav-icon">⚙️</span>
+                <span class="premium-nav-label">Admin</span>
+            </a>
+            <a href="referral.html" class="premium-nav-item">
+                <span class="premium-nav-icon">👥</span>
+                <span class="premium-nav-label">Refer</span>
+            </a>
+            <a href="profile.html" class="premium-nav-item">
+                <span class="premium-nav-icon">👤</span>
+                <span class="premium-nav-label">Profile</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://aiqnodafwmzhwsfunvco.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpcW5vZGFmd216aHdzZnVudmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1MjE4MTcsImV4cCI6MjA3NTA5NzgxN30.OEZloiLjXFdVdgZY6cxqfDlihxRVj36K1N9yjJZzLv8';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Check authentication (basic check - in production, you'd want proper admin auth)
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (!session) {
+                window.location.href = 'login.html';
+            } else {
+                loadAdminStats();
+                loadWithdrawalRequests();
+                loadRecentUsers();
+            }
+        });
+        
+        // Load admin statistics
+        async function loadAdminStats() {
+            try {
+                // Total users
+                const { data: usersData, error: usersError } = await supabase
+                    .from('users')
+                    .select('id');
+                
+                if (!usersError) {
+                    document.getElementById('totalUsers').textContent = usersData.length.toLocaleString();
+                }
+                
+                // Total coins
+                const { data: coinsData, error: coinsError } = await supabase
+                    .from('users')
+                    .select('total_coins');
+                
+                if (!coinsError) {
+                    const totalCoins = coinsData.reduce((sum, user) => sum + user.total_coins, 0);
+                    document.getElementById('totalCoins').textContent = totalCoins.toLocaleString();
+                }
+                
+                // Pending withdrawals
+                const { data: pendingData, error: pendingError } = await supabase
+                    .from('withdrawals')
+                    .select('id')
+                    .eq('status', 'pending');
+                
+                if (!pendingError) {
+                    document.getElementById('pendingWithdrawals').textContent = pendingData.length;
+                }
+                
+                // Total withdrawn
+                const { data: withdrawnData, error: withdrawnError } = await supabase
+                    .from('withdrawals')
+                    .select('coins_requested')
+                    .eq('status', 'paid');
+                
+                if (!withdrawnError) {
+                    const totalWithdrawn = withdrawnData.reduce((sum, w) => sum + w.coins_requested, 0);
+                    document.getElementById('totalWithdrawn').textContent = totalWithdrawn.toLocaleString();
+                }
+                
+            } catch (error) {
+                console.error('Error loading admin stats:', error);
+            }
+        }
+        
+        // Load withdrawal requests
+        async function loadWithdrawalRequests() {
+            try {
+                const { data, error } = await supabase
+                    .from('withdrawals')
+                    .select(`
+                        *,
+                        user:users!withdrawals_user_id_fkey (email)
+                    `)
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: true });
+                
+                if (error) throw error;
+                
+                const container = document.getElementById('withdrawalRequests');
+                container.innerHTML = '';
+                
+                if (data.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center text-gray-500 py-8">
+                            <div class="text-4xl mb-2">💸</div>
+                            <p>No pending withdrawal requests</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                data.forEach(request => {
+                    const requestElement = document.createElement('div');
+                    requestElement.className = 'border-2 border-gray-100 rounded-2xl p-4 hover:border-purple-200 transition-colors';
+                    requestElement.innerHTML = `
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-800">${request.user.email}</h3>
+                                <p class="text-gray-600">${request.method.toUpperCase()}: ${request.account}</p>
+                                <p class="text-sm text-gray-500">Requested: ${new Date(request.created_at).toLocaleDateString()}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xl font-bold text-green-600">${request.net_amount.toLocaleString()} coins</p>
+                                <p class="text-sm text-gray-500">Fee: ${request.fee.toLocaleString()} coins</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="approveWithdrawal('${request.id}')" class="btn-premium flex-1 bg-gradient-to-r from-green-500 to-green-600">
+                                Approve & Pay
+                            </button>
+                            <button onclick="rejectWithdrawal('${request.id}')" class="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-3 rounded-xl font-medium">
+                                Reject
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(requestElement);
+                });
+            } catch (error) {
+                console.error('Error loading withdrawal requests:', error);
+            }
+        }
+        
+        // Load recent users
+        async function loadRecentUsers() {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (error) throw error;
+                
+                const container = document.getElementById('recentUsers');
+                container.innerHTML = '';
+                
+                data.forEach(user => {
+                    const userElement = document.createElement('div');
+                    userElement.className = 'flex justify-between items-center py-3 border-b border-gray-100 last:border-0';
+                    userElement.innerHTML = `
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center mr-3">
+                                <span class="text-white">👤</span>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-800">${user.email}</div>
+                                <div class="text-sm text-gray-500">Joined ${new Date(user.created_at).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-medium text-gray-800">${user.total_coins.toLocaleString()} coins</div>
+                            <div class="text-sm text-gray-500">Ref: ${user.referral_code}</div>
+                        </div>
+                    `;
+                    container.appendChild(userElement);
+                });
+            } catch (error) {
+                console.error('Error loading recent users:', error);
+            }
+        }
+        
+        // Approve withdrawal
+        window.approveWithdrawal = async function(withdrawalId) {
+            if (!confirm('Are you sure you want to approve this withdrawal?')) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('withdrawals')
+                    .update({ status: 'paid' })
+                    .eq('id', withdrawalId);
+                
+                if (error) throw error;
+                
+                showMessage('Withdrawal approved successfully!', 'success');
+                loadAdminStats();
+                loadWithdrawalRequests();
+            } catch (error) {
+                console.error('Error approving withdrawal:', error);
+                showMessage('Error approving withdrawal. Please try again.', 'error');
+            }
+        };
+        
+        // Reject withdrawal
+        window.rejectWithdrawal = async function(withdrawalId) {
+            if (!confirm('Are you sure you want to reject this withdrawal?')) return;
+            
+            try {
+                // Get withdrawal details to return coins to user
+                const { data: withdrawalData, error: withdrawalError } = await supabase
+                    .from('withdrawals')
+                    .select('*')
+                    .eq('id', withdrawalId)
+                    .single();
+                
+                if (withdrawalError) throw withdrawalError;
+                
+                // Return coins to user
+                const { data: userData, error: userError } = await supabase
+                    .from('users')
+                    .select('total_coins, withdrawn_coins')
+                    .eq('id', withdrawalData.user_id)
+                    .single();
+                
+                if (userError) throw userError;
+                
+                await supabase
+                    .from('users')
+                    .update({
+                        total_coins: userData.total_coins + withdrawalData.coins_requested,
+                        withdrawn_coins: userData.withdrawn_coins - withdrawalData.coins_requested
+                    })
+                    .eq('id', withdrawalData.user_id);
+                
+                // Update withdrawal status
+                const { error } = await supabase
+                    .from('withdrawals')
+                    .update({ status: 'rejected' })
+                    .eq('id', withdrawalId);
+                
+                if (error) throw error;
+                
+                showMessage('Withdrawal rejected and coins returned to user.', 'success');
+                loadAdminStats();
+                loadWithdrawalRequests();
+            } catch (error) {
+                console.error('Error rejecting withdrawal:', error);
+                showMessage('Error rejecting withdrawal. Please try again.', 'error');
+            }
+        };
+        
+        // Show message
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${type}-message fade-in`;
+            messageDiv.textContent = message;
+            
+            document.querySelector('main').prepend(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+        
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = 'login.html';
+        });
+        
+        // Premium nav active state
+        document.querySelectorAll('.premium-nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.premium-nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
