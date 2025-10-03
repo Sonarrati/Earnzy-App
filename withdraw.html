@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw Earnings - Earnzy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Premium Header -->
+        <header class="glass-effect sticky top-0 z-50">
+            <div class="px-6 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <a href="dashboard.html" class="text-gray-600 mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </a>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-800">Withdraw Earnings</h1>
+                            <p class="text-sm text-gray-600">Convert coins to cash</p>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-amber-400 to-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                        <span id="userCoins">0</span> 🪙
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content-with-premium-nav p-6">
+            <!-- Balance Overview -->
+            <div class="card-premium text-center mb-6">
+                <div class="text-sm text-gray-600 mb-2">Available Balance</div>
+                <div class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-emerald-500 mb-2" id="availableBalance">0</div>
+                <div class="text-gray-600">coins ready to withdraw</div>
+            </div>
+
+            <!-- Conversion Rate -->
+            <div class="card-premium mb-6">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">Conversion Rate</h3>
+                <div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl border border-blue-200">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mr-4">
+                            <span class="text-white">💸</span>
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-800">100 Coins = ₹1.00</div>
+                            <div class="text-sm text-gray-600">Instant withdrawal to your account</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Withdrawal Methods -->
+            <div class="card-premium mb-6">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">Withdrawal Methods</h3>
+                <div class="space-y-3">
+                    <!-- UPI -->
+                    <label class="flex items-center p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-purple-300 transition-colors withdrawal-method">
+                        <input type="radio" name="withdrawalMethod" value="upi" class="hidden" checked>
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center mr-4">
+                            <span class="text-white">📱</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-bold text-gray-800">UPI Transfer</div>
+                            <div class="text-sm text-gray-600">Instant transfer to any UPI ID</div>
+                        </div>
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center method-check">
+                            <div class="w-3 h-3 bg-purple-500 rounded-full hidden"></div>
+                        </div>
+                    </label>
+
+                    <!-- Paytm -->
+                    <label class="flex items-center p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-blue-300 transition-colors withdrawal-method">
+                        <input type="radio" name="withdrawalMethod" value="paytm" class="hidden">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mr-4">
+                            <span class="text-white">💙</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-bold text-gray-800">Paytm Wallet</div>
+                            <div class="text-sm text-gray-600">Direct to Paytm account</div>
+                        </div>
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center method-check">
+                            <div class="w-3 h-3 bg-blue-500 rounded-full hidden"></div>
+                        </div>
+                    </label>
+
+                    <!-- Bank Transfer -->
+                    <label class="flex items-center p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-green-300 transition-colors withdrawal-method">
+                        <input type="radio" name="withdrawalMethod" value="bank" class="hidden">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center mr-4">
+                            <span class="text-white">🏦</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-bold text-gray-800">Bank Transfer</div>
+                            <div class="text-sm text-gray-600">1-2 business days</div>
+                        </div>
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center method-check">
+                            <div class="w-3 h-3 bg-green-500 rounded-full hidden"></div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Withdrawal Amount -->
+            <div class="card-premium mb-6">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">Withdrawal Amount</h3>
+                
+                <!-- Quick Amounts -->
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                    <button class="amount-btn p-3 bg-gray-100 rounded-xl text-center hover:bg-purple-100 transition-colors" data-amount="1000">
+                        <div class="font-bold text-gray-800">1000</div>
+                        <div class="text-xs text-gray-600">₹10.00</div>
+                    </button>
+                    <button class="amount-btn p-3 bg-gray-100 rounded-xl text-center hover:bg-purple-100 transition-colors" data-amount="2500">
+                        <div class="font-bold text-gray-800">2500</div>
+                        <div class="text-xs text-gray-600">₹25.00</div>
+                    </button>
+                    <button class="amount-btn p-3 bg-gray-100 rounded-xl text-center hover:bg-purple-100 transition-colors" data-amount="5000">
+                        <div class="font-bold text-gray-800">5000</div>
+                        <div class="text-xs text-gray-600">₹50.00</div>
+                    </button>
+                </div>
+
+                <!-- Custom Amount -->
+                <div class="mb-4">
+                    <label class="form-label">Custom Amount (Minimum 1000 coins)</label>
+                    <div class="flex items-center">
+                        <input type="number" id="customAmount" class="form-input flex-1" placeholder="Enter coins amount" min="1000" step="100">
+                        <div class="ml-3 text-sm text-gray-600 min-w-20 text-right" id="customAmountRupees">₹0.00</div>
+                    </div>
+                </div>
+
+                <!-- Account Details -->
+                <div id="accountDetails">
+                    <div class="mb-4">
+                        <label class="form-label" id="accountLabel">UPI ID</label>
+                        <input type="text" id="accountInput" class="form-input" placeholder="Enter your UPI ID">
+                    </div>
+                </div>
+
+                <!-- Withdrawal Summary -->
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-4 border border-green-200">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-600">Withdrawal Amount:</span>
+                        <span class="font-bold text-gray-800" id="summaryCoins">0 coins</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-600">You Receive:</span>
+                        <span class="font-bold text-green-600" id="summaryCash">₹0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Processing Fee:</span>
+                        <span class="text-gray-500" id="summaryFee">₹0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Withdraw Button -->
+            <button id="withdrawBtn" class="btn-premium mb-6">
+                <span>Withdraw Now</span>
+                <span>💸</span>
+            </button>
+
+            <!-- Recent Withdrawals -->
+            <div class="card-premium">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">Recent Withdrawals</h3>
+                <div id="withdrawalHistory" class="space-y-3">
+                    <div class="text-center text-gray-500 py-4">
+                        <div class="text-4xl mb-2">💸</div>
+                        <p>No withdrawals yet</p>
+                        <p class="text-sm">Your withdrawal history will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Premium Bottom Navigation -->
+        <nav class="premium-nav">
+            <a href="dashboard.html" class="premium-nav-item">
+                <span class="premium-nav-icon">🏠</span>
+                <span class="premium-nav-label">Home</span>
+            </a>
+            <a href="watch.html" class="premium-nav-item">
+                <span class="premium-nav-icon">🎥</span>
+                <span class="premium-nav-label">Earn</span>
+            </a>
+            <a href="referral.html" class="premium-nav-item">
+                <span class="premium-nav-icon">👥</span>
+                <span class="premium-nav-label">Refer</span>
+            </a>
+            <a href="profile.html" class="premium-nav-item">
+                <span class="premium-nav-icon">👤</span>
+                <span class="premium-nav-label">Profile</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://aiqnodafwmzhwsfunvco.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpcW5vZGFmd216aHdzZnVudmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1MjE4MTcsImV4cCI6MjA3NTA5NzgxN30.OEZloiLjXFdVdgZY6cxqfDlihxRVj36K1N9yjJZzLv8';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        let userId = null;
+        let currentMethod = 'upi';
+        let currentAmount = 0;
+        const conversionRate = 100; // 100 coins = ₹1
+        const processingFee = 0.02; // 2% processing fee
+        
+        // Check authentication
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (!session) {
+                window.location.href = 'login.html';
+            } else {
+                userId = session.user.id;
+                loadUserData();
+                loadWithdrawalHistory();
+                setupEventListeners();
+            }
+        });
+        
+        // Load user data
+        async function loadUserData() {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+                
+                if (error) throw error;
+                
+                document.getElementById('userCoins').textContent = data.total_coins;
+                document.getElementById('availableBalance').textContent = data.total_coins;
+                
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Withdrawal method selection
+            document.querySelectorAll('.withdrawal-method').forEach(method => {
+                method.addEventListener('click', function() {
+                    // Update UI
+                    document.querySelectorAll('.withdrawal-method').forEach(m => {
+                        m.classList.remove('border-purple-400', 'border-blue-400', 'border-green-400');
+                        m.querySelector('.method-check div').classList.add('hidden');
+                    });
+                    
+                    this.classList.add(
+                        currentMethod === 'upi' ? 'border-purple-400' :
+                        currentMethod === 'paytm' ? 'border-blue-400' : 'border-green-400'
+                    );
+                    this.querySelector('.method-check div').classList.remove('hidden');
+                    
+                    // Update current method
+                    currentMethod = this.querySelector('input').value;
+                    updateAccountDetails();
+                });
+            });
+            
+            // Quick amount buttons
+            document.querySelectorAll('.amount-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const amount = parseInt(this.getAttribute('data-amount'));
+                    document.getElementById('customAmount').value = amount;
+                    updateWithdrawalSummary(amount);
+                });
+            });
+            
+            // Custom amount input
+            document.getElementById('customAmount').addEventListener('input', function() {
+                const amount = parseInt(this.value) || 0;
+                updateWithdrawalSummary(amount);
+            });
+            
+            // Withdraw button
+            document.getElementById('withdrawBtn').addEventListener('click', processWithdrawal);
+        }
+        
+        // Update account details based on method
+        function updateAccountDetails() {
+            const accountLabel = document.getElementById('accountLabel');
+            const accountInput = document.getElementById('accountInput');
+            
+            switch(currentMethod) {
+                case 'upi':
+                    accountLabel.textContent = 'UPI ID';
+                    accountInput.placeholder = 'Enter your UPI ID (e.g., name@upi)';
+                    break;
+                case 'paytm':
+                    accountLabel.textContent = 'Paytm Number';
+                    accountInput.placeholder = 'Enter your Paytm mobile number';
+                    break;
+                case 'bank':
+                    accountLabel.textContent = 'Bank Account Number';
+                    accountInput.placeholder = 'Enter your bank account number';
+                    break;
+            }
+        }
+        
+        // Update withdrawal summary
+        function updateWithdrawalSummary(coins) {
+            currentAmount = coins;
+            const cashAmount = coins / conversionRate;
+            const feeAmount = cashAmount * processingFee;
+            const netAmount = cashAmount - feeAmount;
+            
+            document.getElementById('customAmountRupees').textContent = `₹${cashAmount.toFixed(2)}`;
+            document.getElementById('summaryCoins').textContent = `${coins.toLocaleString()} coins`;
+            document.getElementById('summaryCash').textContent = `₹${netAmount.toFixed(2)}`;
+            document.getElementById('summaryFee').textContent = `₹${feeAmount.toFixed(2)}`;
+        }
+        
+        // Process withdrawal
+        async function processWithdrawal() {
+            const availableCoins = parseInt(document.getElementById('availableBalance').textContent);
+            const accountDetails = document.getElementById('accountInput').value.trim();
+            
+            // Validation
+            if (currentAmount < 1000) {
+                showMessage('Minimum withdrawal amount is 1000 coins (₹10.00)', 'error');
+                return;
+            }
+            
+            if (currentAmount > availableCoins) {
+                showMessage('Insufficient coins for withdrawal', 'error');
+                return;
+            }
+            
+            if (!accountDetails) {
+                showMessage('Please enter your account details', 'error');
+                return;
+            }
+            
+            // Disable button and show loading
+            const btn = document.getElementById('withdrawBtn');
+            btn.disabled = true;
+            btn.classList.add('loading');
+            
+            try {
+                // Get current user data
+                const { data: userData, error: userError } = await supabase
+                    .from('users')
+                    .select('total_coins, withdrawn_coins')
+                    .eq('id', userId)
+                    .single();
+                
+                if (userError) throw userError;
+                
+                // Calculate amounts
+                const cashAmount = currentAmount / conversionRate;
+                const feeAmount = cashAmount * processingFee;
+                const netAmount = cashAmount - feeAmount;
+                
+                // Update user coins
+                const newCoins = userData.total_coins - currentAmount;
+                const newWithdrawn = (userData.withdrawn_coins || 0) + currentAmount;
+                
+                const { error: updateError } = await supabase
+                    .from('users')
+                    .update({ 
+                        total_coins: newCoins,
+                        withdrawn_coins: newWithdrawn
+                    })
+                    .eq('id', userId);
+                
+                if (updateError) throw updateError;
+                
+                // Create withdrawal record
+                const { error: withdrawalError } = await supabase
+                    .from('withdrawals')
+                    .insert([
+                        { 
+                            user_id: userId,
+                            method: currentMethod,
+                            account: accountDetails,
+                            coins_requested: currentAmount,
+                            net_amount: netAmount,
+                            fee: feeAmount,
+                            status: 'pending'
+                        }
+                    ]);
+                
+                if (withdrawalError) throw withdrawalError;
+                
+                // Update UI
+                document.getElementById('userCoins').textContent = newCoins;
+                document.getElementById('availableBalance').textContent = newCoins;
+                
+                // Reset form
+                document.getElementById('customAmount').value = '';
+                document.getElementById('accountInput').value = '';
+                updateWithdrawalSummary(0);
+                
+                // Reload history
+                loadWithdrawalHistory();
+                
+                // Show success message
+                showMessage(`Withdrawal request submitted for ₹${netAmount.toFixed(2)}! Processing time: 24-48 hours.`, 'success');
+                
+            } catch (error) {
+                console.error('Error processing withdrawal:', error);
+                showMessage('Error processing withdrawal. Please try again.', 'error');
+            } finally {
+                // Re-enable button
+                btn.disabled = false;
+                btn.classList.remove('loading');
+            }
+        }
+        
+        // Load withdrawal history
+        async function loadWithdrawalHistory() {
+            try {
+                const { data, error } = await supabase
+                    .from('withdrawals')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                if (error) throw error;
+                
+                const historyContainer = document.getElementById('withdrawalHistory');
+                historyContainer.innerHTML = '';
+                
+                if (data.length === 0) {
+                    historyContainer.innerHTML = `
+                        <div class="text-center text-gray-500 py-4">
+                            <div class="text-4xl mb-2">💸</div>
+                            <p>No withdrawals yet</p>
+                            <p class="text-sm">Your withdrawal history will appear here</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                data.forEach(withdrawal => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'flex items-center justify-between py-3 border-b border-gray-100 last:border-0';
+                    
+                    const date = new Date(withdrawal.created_at);
+                    const dateString = date.toLocaleDateString();
+                    
+                    const statusColors = {
+                        'pending': 'text-yellow-600 bg-yellow-100',
+                        'paid': 'text-green-600 bg-green-100',
+                        'rejected': 'text-red-600 bg-red-100'
+                    };
+                    
+                    const methodIcons = {
+                        'upi': '📱',
+                        'paytm': '💙',
+                        'bank': '🏦'
+                    };
+                    
+                    historyItem.innerHTML = `
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center mr-3">
+                                <span class="text-white">${methodIcons[withdrawal.method] || '💸'}</span>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-800">${withdrawal.method.toUpperCase()} Transfer</div>
+                                <div class="text-xs text-gray-500">${dateString}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-gray-800">₹${withdrawal.net_amount.toFixed(2)}</div>
+                            <div class="text-xs px-2 py-1 rounded-full ${statusColors[withdrawal.status]}">
+                                ${withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1)}
+                            </div>
+                        </div>
+                    `;
+                    
+                    historyContainer.appendChild(historyItem);
+                });
+                
+            } catch (error) {
+                console.error('Error loading withdrawal history:', error);
+            }
+        }
+        
+        // Show message
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${type}-message fade-in`;
+            messageDiv.textContent = message;
+            
+            document.querySelector('main').prepend(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+        
+        // Initialize
+        updateAccountDetails();
+        updateWithdrawalSummary(0);
+        
+        // Premium nav active state
+        document.querySelectorAll('.premium-nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.premium-nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
